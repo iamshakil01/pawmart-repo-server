@@ -1,13 +1,14 @@
 const express = require('express');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
+require("dotenv").config()
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
-const uri = "mongodb+srv://pawmart-db:P9S5Z8pZcg7Okyg7@firstdb.2rqimp0.mongodb.net/?appName=FirstDB";
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@firstdb.2rqimp0.mongodb.net/?appName=FirstDB`;
 
 const client = new MongoClient(uri, {
   serverApi: {
