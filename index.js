@@ -19,6 +19,8 @@ const client = new MongoClient(uri, {
 });
 
 async function run() {
+
+  // await client.connect()
   try {
     const db = client.db('pawmart-db');
     const petsCollection = db.collection('pets-supplies');
@@ -66,14 +68,14 @@ async function run() {
       res.send(listings);
     });
 
-    // ✅ DELETE listing
+    //  DELETE listing
     app.delete("/listings/:id", async (req, res) => {
       const { id } = req.params;
       const result = await listingsCollection.deleteOne({ _id: new ObjectId(id) });
       res.send(result);
     });
 
-    // ✅ UPDATE listing
+    //  UPDATE listing
     app.put("/listings/:id", async (req, res) => {
       const { id } = req.params;
       const updated = req.body;
@@ -84,6 +86,7 @@ async function run() {
       res.send(result);
     });
 
+    // await client.db("admin").command({ ping: 1 });
     console.log("Connected Ping");
   } catch (err) {
     console.error("MongoDB connection failed", err);
