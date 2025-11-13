@@ -24,10 +24,10 @@ async function run() {
 
     const db = client.db('pawmart-db');
     const petsCollection = db.collection('pets-supplies');
+    const ordersCollection = db.collection('orders')
 
 
-
-    // Find
+    // Find all pets/supplies
     app.get("/pets-supplies", async (req, res) => {
       try {
         const result = await petsCollection.find().toArray();
@@ -38,8 +38,7 @@ async function run() {
     });
 
 
-
-    // Find Latest Limit Data
+    // Find Latest Limit Data for home
     app.get("/pets-supplies/home", async (req, res) => {
       try {
         const result = await petsCollection.find().sort({ _id: -1 }).limit(6).toArray();
@@ -62,13 +61,42 @@ async function run() {
     });
 
 
-    // POST A Single Data
+    // POST A Single Data (Add Listing)
     app.post("/pets-supplies", async (req, res) => {
       const data = req.body
       console.log(data)
       const result = await petsCollection.insertOne(data)
       res.send(result);
 
+    });
+
+    app.get("/orders", async (req, res) => {
+      try {
+        const email = req.query.email;
+        if (!email) {
+          return res.status(400).send({ message: "Missing email query parameter" });
+        }
+        const orders = await ordersCollection.find({ email }).toArray();
+        return res.send(orders);
+      } catch (err) {
+        console.error(err);
+        return res.status(500).send({ message: "Failed to load orders" });
+      }
+    });
+
+    // Create new Order and POST
+    app.post("/orders", async (req, res) => {
+      try {
+        const orderData = req.body;
+        if (!orderData || Object.keys(orderData).length === 0) {
+          return res.status(400).send({ message: "Empty order data" });
+        }
+        const result = await ordersCollection.insertOne(orderData);
+        return res.send({ insertedId: result.insertedId });
+      } catch (err) {
+        console.error(err);
+        return res.status(500).send({ message: "Failed to submit order" });
+      }
     });
 
 
